@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>analyze-port-scanner: the patch panel</title>
+<style>
+  /* I laid this page out like the patch panel in a wiring closet:
+     a dark board, rows of labeled jacks, and red tags on the ports
+     I never want to see lit up in the wild. */
+  :root { --ink:#e8e2d5; --dim:#9a917f; --panel:#141210; --line:#3a352c;
+          --red:#d64541; --amber:#d9a441; --bg:#0b0a09; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family: Georgia, 'Times New Roman', serif; }
+  header { text-align:center; padding:2rem 1rem 0.5rem; }
+  header img.banner { max-width:min(880px, 94vw); width:100%; height:auto; }
+  h1 { font-size:1.9rem; margin:0.8rem 0 0.2rem; letter-spacing:0.02em; }
+  .sub { color:var(--dim); max-width:44rem; margin:0.4rem auto 1rem;
+         line-height:1.55; }
+  main { max-width:960px; margin:0 auto; padding:0 1rem 3rem; }
+  h2 { border-bottom:2px solid var(--line); padding-bottom:0.3rem;
+       margin-top:2.4rem; font-size:1.35rem; }
+  p { line-height:1.6; }
+  a { color:var(--amber); }
+  .board { display:grid; gap:0.45rem; margin-top:1rem;
+           grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); }
+  .jack { background:var(--panel); border:1px solid var(--line);
+          border-radius:6px; padding:0.5rem 0.4rem; text-align:center;
+          cursor:pointer; }
+  .jack .p { font-family:'Courier New', monospace; font-size:1.05rem;
+             display:block; }
+  .jack .s { color:var(--dim); font-size:0.78rem; display:block;
+             margin-top:0.15rem; }
+  .jack.watch { border-color:var(--red); }
+  .jack.watch .p { color:var(--red); }
+  #jack-detail { min-height:1.6em; color:var(--amber);
+                 font-family:'Courier New', monospace; margin-top:0.7rem; }
+  .jobs { display:grid; gap:1rem; grid-template-columns:1fr; }
+  @media (min-width:720px) { .jobs { grid-template-columns:1fr 1fr; } }
+  .job { background:var(--panel); border:1px solid var(--line);
+         border-radius:8px; padding:1rem 1.1rem; }
+  .job h3 { margin-top:0; font-family:'Courier New', monospace; }
+  pre { background:#060505; border:1px solid var(--line); border-radius:6px;
+        padding:0.9rem 1rem; overflow-x:auto;
+        font-family:'Courier New', monospace; font-size:0.85rem;
+        line-height:1.5; color:#cfc7b4; }
+  .cap { color:var(--dim); font-size:0.9rem; margin:0.4rem 0 1.2rem; }
+  img.schematic { width:100%; height:auto; border:1px solid var(--line);
+                  border-radius:6px; background:#f4efe2; }
+  footer { border-top:2px solid var(--line); color:var(--dim);
+           text-align:center; padding:1.4rem 1rem 2rem; font-size:0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <img class="banner" src="assets/banner.png" alt="analyze-port-scanner banner">
+  <h1>analyze-port-scanner</h1>
+  <p class="sub">I scan a host's TCP ports myself, and I analyze scan
+  results other tools already produced. Either way you get a short
+  list of what is open and what deserves a second look, not a wall of
+  raw scanner output.</p>
+</header>
+<main>
+  <h2>The board: my default probe set</h2>
+  <p>These are the ports the scanner probes when you do not name your
+  own. The red jacks are my watch list, the ports I always call out by
+  name in a summary. Click any jack for its note. This board is the
+  probe set itself, not a scan result.</p>
+  <div class="board" id="board"></div>
+  <div id="jack-detail">Pick a jack.</div>
+
+  <h2>Two jobs</h2>
+  <div class="jobs">
+    <div class="job">
+      <h3>scan</h3>
+      <p>Plain TCP connect attempts against a host you name. A port
+      counts as open when the handshake completes. An unresolvable
+      host fails loudly instead of looking like a host with every
+      port closed.</p>
+      <pre>python3 main.py scan 127.0.0.1 --ports 22,80,443</pre>
+    </div>
+    <div class="job">
+      <h3>analyze</h3>
+      <p>Parses a scan file you already have: nmap normal output,
+      nmap grepable output, or plain host:port lines. Lines it cannot
+      understand are counted and reported as skipped, never guessed
+      at. A file with nothing parseable fails, because a run that
+      processed nothing does not get to call itself clean.</p>
+      <pre>python3 main.py analyze scan-results.txt</pre>
+    </div>
+  </div>
+
+  <h2>Proof, recorded from real runs</h2>
+  <p>Both panels below are output I captured while testing this exact
+  code, not mock-ups.</p>
+  <pre>Scanned 127.0.0.1 (127.0.0.1): 3 ports probed, 0 open
+  nothing open in the probed set</pre>
+  <p class="cap">A loopback scan of my own test machine. Three ports
+  probed, none listening, and the tool says exactly that.</p>
+  <pre>Analyzed scan-results.txt: 6 port rows across 3 hosts, 5 open
+192.0.2.10:
+  22/tcp open ssh
+  23/tcp open telnet  &lt;- Telnet, plaintext remote shell
+  80/tcp closed http
+192.0.2.20:
+  443/tcp open https
+  3306/tcp open mysql  &lt;- MySQL or MariaDB
+192.0.2.30:
+  6379/tcp open redis  &lt;- Redis, often unauthenticated
+(1 lines not understood and skipped)</pre>
+  <p class="cap">The analyze mode reading a mixed fixture file (nmap
+  normal, grepable, and plain lines, plus one line nobody can parse)
+  during the test run. The same run also caught both test listeners I
+  opened on loopback and refused to overwrite its own input file.</p>
+
+  <h2>The apparatus</h2>
+  <p>The schematic I drew for this tool, from its real parts: one
+  file, its parsers, its probe pool, and the watch list.</p>
+  <img class="schematic" src="assets/schematic.png"
+       alt="Hand-drawn invention schematic of analyze-port-scanner">
+
+  <h2>Get it</h2>
+  <p>Python 3, standard library only, nothing to install.
+  Source and full documentation:
+  <a href="https://github.com/ShadowGuard-AI/analyze-port-scanner">github.com/ShadowGuard-AI/analyze-port-scanner</a>.</p>
+</main>
+<footer>
+  analyze-port-scanner is MIT licensed. Copyright (c) Gavin K (@Epsilon0xCell).
+</footer>
+<script>
+  // The board is data, not decoration: port, service, and the note
+  // the tool itself prints for watch-list ports. I keep the three in
+  // one place here exactly the way main.py keeps them in one dict.
+  var jacks = [
+    [21,'ftp','FTP, plaintext file transfer'],[22,'ssh',''],
+    [23,'telnet','Telnet, plaintext remote shell'],[25,'smtp',''],
+    [53,'domain',''],[80,'http',''],[110,'pop3',''],[143,'imap',''],
+    [443,'https',''],[445,'microsoft-ds','SMB, Windows file sharing'],
+    [993,'imaps',''],[995,'pop3s',''],[1723,'pptp',''],
+    [3306,'mysql','MySQL or MariaDB'],
+    [3389,'ms-wbt-server','RDP, Windows remote desktop'],
+    [5432,'postgresql','PostgreSQL'],[5900,'vnc','VNC remote desktop'],
+    [6379,'redis','Redis, often unauthenticated'],[8000,'http-alt',''],
+    [8080,'http-proxy',''],[8443,'https-alt',''],
+    [9200,'elasticsearch','Elasticsearch HTTP API'],
+    [27017,'mongodb','MongoDB']
+  ];
+  var board = document.getElementById('board');
+  var detail = document.getElementById('jack-detail');
+  jacks.forEach(function(j) {
+    var d = document.createElement('div');
+    d.className = 'jack' + (j[2] ? ' watch' : '');
+    d.innerHTML = '<span class="p">' + j[0] + '</span>' +
+                  '<span class="s">' + j[1] + '</span>';
+    d.addEventListener('click', function() {
+      detail.textContent = j[0] + '/tcp ' + j[1] +
+        (j[2] ? ' : ' + j[2] : ' : probed by default, no special note');
+    });
+    board.appendChild(d);
+  });
+</script>
+</body>
+</html>
