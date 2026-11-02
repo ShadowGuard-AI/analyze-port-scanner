@@ -3,102 +3,83 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>analyze-port-scanner: the patch panel</title>
+<title>analyze-port-scanner: Snowplow Train of the Donner Pass</title>
+<meta name="description" content="A tool with two related jobs: scan a host's TCP ports directly, and analyze scan results another tool already produced. Python 3, standard library only.">
 <style>
-  /* I laid this page out like the patch panel in a wiring closet:
-     a dark board, rows of labeled jacks, and red tags on the ports
-     I never want to see lit up in the wild. */
-  :root { --ink:#e8e2d5; --dim:#9a917f; --panel:#141210; --line:#3a352c;
-          --red:#d64541; --amber:#d9a441; --bg:#0b0a09; }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink);
-         font-family: Georgia, 'Times New Roman', serif; }
-  header { text-align:center; padding:2rem 1rem 0.5rem; }
-  header img.banner { max-width:min(880px, 94vw); width:100%; height:auto; }
-  h1 { font-size:1.9rem; margin:0.8rem 0 0.2rem; letter-spacing:0.02em; }
-  .sub { color:var(--dim); max-width:44rem; margin:0.4rem auto 1rem;
-         line-height:1.55; }
-  main { max-width:960px; margin:0 auto; padding:0 1rem 3rem; }
-  h2 { border-bottom:2px solid var(--line); padding-bottom:0.3rem;
-       margin-top:2.4rem; font-size:1.35rem; }
-  p { line-height:1.6; }
-  a { color:var(--amber); }
-  .board { display:grid; gap:0.45rem; margin-top:1rem;
-           grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); }
-  .jack { background:var(--panel); border:1px solid var(--line);
-          border-radius:6px; padding:0.5rem 0.4rem; text-align:center;
-          cursor:pointer; }
-  .jack .p { font-family:'Courier New', monospace; font-size:1.05rem;
-             display:block; }
-  .jack .s { color:var(--dim); font-size:0.78rem; display:block;
-             margin-top:0.15rem; }
-  .jack.watch { border-color:var(--red); }
-  .jack.watch .p { color:var(--red); }
-  #jack-detail { min-height:1.6em; color:var(--amber);
-                 font-family:'Courier New', monospace; margin-top:0.7rem; }
-  .jobs { display:grid; gap:1rem; grid-template-columns:1fr; }
-  @media (min-width:720px) { .jobs { grid-template-columns:1fr 1fr; } }
-  .job { background:var(--panel); border:1px solid var(--line);
-         border-radius:8px; padding:1rem 1.1rem; }
-  .job h3 { margin-top:0; font-family:'Courier New', monospace; }
-  pre { background:#060505; border:1px solid var(--line); border-radius:6px;
-        padding:0.9rem 1rem; overflow-x:auto;
-        font-family:'Courier New', monospace; font-size:0.85rem;
-        line-height:1.5; color:#cfc7b4; }
-  .cap { color:var(--dim); font-size:0.9rem; margin:0.4rem 0 1.2rem; }
-  img.schematic { width:100%; height:auto; border:1px solid var(--line);
-                  border-radius:6px; background:#f4efe2; }
-  footer { border-top:2px solid var(--line); color:var(--dim);
-           text-align:center; padding:1.4rem 1rem 2rem; font-size:0.9rem; }
+@font-face{font-family:'B612';src:url('fonts/B612.ttf') format('truetype');}
+@font-face{font-family:'Archivo';src:url('fonts/Archivo.ttf') format('truetype');}
+:root{--grey:#83857f;--green:#265434;--dark:#1e4228;--red:#c42c28;--dust:#e8e4d6;--ink:#23251f}
+*{box-sizing:border-box}body{margin:0;background:var(--grey);color:var(--ink);font-family:'Archivo',sans-serif;line-height:1.65}
+h1,h2{font-family:'B612',monospace}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;background:var(--grey)}
+.hero img.heroimg{width:100%;height:62vh;object-fit:cover;display:block}
+.hero .in{padding:1rem 6vw 2rem;max-width:1120px;margin:0 auto;width:100%}
+.hero h1{color:var(--dust)}
+.logo{width:170px;background:var(--green);border-radius:10px}
+main{padding:0 6vw 3rem;max-width:1120px;margin:0 auto}
+nav{display:flex;gap:.8rem;flex-wrap:wrap;margin:1rem 0}
+.blade{display:inline-block;text-decoration:none;color:var(--dust);font-family:'B612',monospace;padding:.8rem 1.5rem .8rem 1.1rem;background:linear-gradient(115deg,var(--green) 88%,#a8986e 88%,#a8986e 93%,#96988e 93%);clip-path:polygon(0 18%,88% 0,100% 50%,88% 100%,0 82%);transition:transform .12s,filter .15s}
+.blade:hover{filter:drop-shadow(0 3px 0 var(--red))}
+.blade:active{transform:translateY(5px)}
+.blade:focus-visible{outline:none;filter:drop-shadow(0 0 6px var(--dust))}
+.sheet{background:var(--green);color:var(--dust);padding:0 1.5rem 1.3rem;margin:1.8rem 0;border-top:6px solid var(--dust);background-image:repeating-linear-gradient(to right,transparent 0 118px,rgba(232,228,214,.14) 118px 120px)}
+.sheet h2{border-bottom:2px solid var(--dust);padding-bottom:.4rem}
+.roads{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+@media(max-width:760px){.roads{grid-template-columns:1fr}}
+pre{background:#14231a;color:var(--dust);padding:1rem;overflow-x:auto}
+a{color:#7a1d1a}a:before{content:'';display:inline-block;width:10px;height:17px;margin-right:.5em;vertical-align:-3px;background:linear-gradient(to bottom,var(--dust) 0 34%,#6a6c68 34%);border:1px solid #555752}
+.blade:before{content:none}
+.flagged{border-bottom:3px solid var(--red);padding-bottom:.3rem}
+.rail{height:12px;margin:2.2rem 0;background:var(--grey);border-top:6px solid #6a6c68;position:relative}
+.rail:after{content:'';position:absolute;left:50%;top:-9px;width:74px;height:18px;margin-left:-37px;background:#6a6c68;border:2px solid #444642}
+.rail.minor{width:50%;margin:2.2rem auto;border-top:6px solid #6a6c68}
+.rail.minor:after{content:none}
+.stop{display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid rgba(232,228,214,.22)}
+.stop b{font-family:'B612',monospace;min-width:120px}
+footer{padding:1rem 6vw 2.4rem;max-width:1120px;margin:0 auto}
+.notice{background:var(--dust);color:var(--ink);border:3px solid var(--red);padding:.2rem 1.3rem 1rem;margin:1.4rem 0}
+.notice h3{font-family:'B612',monospace}
 </style>
 </head>
 <body>
-<header>
-  <img class="banner" src="assets/banner.png" alt="analyze-port-scanner banner">
-  <h1>analyze-port-scanner</h1>
-  <p class="sub">I scan a host's TCP ports myself, and I analyze scan
-  results other tools already produced. Either way you get a short
-  list of what is open and what deserves a second look, not a wall of
-  raw scanner output.</p>
+<header class="hero">
+<img class="heroimg" src="assets/intro-banner.png" alt="A rotary plow working a snow cut in the Donner Pass, plume thrown to the right, no text">
+<div class="in">
+<img class="logo" src="assets/logo.png" alt="Rotary plow front: a green circular housing, grey blades with red cutting edges, snow packed at the lower left">
+<h1>analyze-port-scanner</h1>
+<p>A timetable sheet for a line with exactly two services. Scan runs on the left road, analyze on the right road.</p>
+<nav>
+<a class="blade" href="#scan">The Scan Road</a>
+<a class="blade" href="#analyze">The Analyze Road</a>
+<a class="blade" href="#shared">Shared stops</a>
+<a class="blade" href="#terminus">Terminus</a>
+</nav>
+</div>
 </header>
 <main>
-  <h2>The board: my default probe set</h2>
-  <p>These are the ports the scanner probes when you do not name your
-  own. The red jacks are my watch list, the ports I always call out by
-  name in a summary. Click any jack for its note. This board is the
-  probe set itself, not a scan result.</p>
-  <div class="board" id="board"></div>
-  <div id="jack-detail">Pick a jack.</div>
-
-  <h2>Two jobs</h2>
-  <div class="jobs">
-    <div class="job">
-      <h3>scan</h3>
-      <p>Plain TCP connect attempts against a host you name. A port
-      counts as open when the handshake completes. An unresolvable
-      host fails loudly instead of looking like a host with every
-      port closed.</p>
-      <pre>python3 main.py scan 127.0.0.1 --ports 22,80,443</pre>
-    </div>
-    <div class="job">
-      <h3>analyze</h3>
-      <p>Parses a scan file you already have: nmap normal output,
-      nmap grepable output, or plain host:port lines. Lines it cannot
-      understand are counted and reported as skipped, never guessed
-      at. A file with nothing parseable fails, because a run that
-      processed nothing does not get to call itself clean.</p>
-      <pre>python3 main.py analyze scan-results.txt</pre>
-    </div>
-  </div>
-
-  <h2>Proof, recorded from real runs</h2>
-  <p>Both panels below are output I captured while testing this exact
-  code, not mock-ups.</p>
-  <pre>Scanned 127.0.0.1 (127.0.0.1): 3 ports probed, 0 open
+<section class="sheet"><h2>Masthead: the line's charter</h2>
+<p>I wrote this tool to do two related jobs: scan a host's TCP ports myself, and analyze scan results another tool already produced. Either way, what comes out is a short, readable list of what is open and what deserves a second look, instead of a wall of raw scanner output.</p>
+<p>That charter stays in the first person on this sheet, because the source's voice is part of its evidence.</p>
+</section>
+<div class="rail"></div>
+<div class="roads">
+<section class="sheet" id="scan"><h2>The Scan Road</h2>
+<p>Scan probes a host with plain TCP connect attempts and reports the ports that complete a handshake, with service names.</p>
+<div class="stop"><b>host</b><span>The hostname or IP address to scan.</span></div>
+<div class="stop"><b>--ports</b><span>A comma list of ports and ranges such as 22,80,8000-8100, defaulting to a common services set.</span></div>
+<div class="stop"><b>--port-range</b><span>One more range to add, such as 1-1024.</span></div>
+<div class="stop"><b>--timeout</b><span>Seconds per connect attempt, default 0.6.</span></div>
+<p>Timetable entry, the worked example:</p>
+<pre>python3 main.py scan 127.0.0.1 --ports 22,80,443
+Scanned 127.0.0.1 (127.0.0.1): 3 ports probed, 0 open
   nothing open in the probed set</pre>
-  <p class="cap">A loopback scan of my own test machine. Three ports
-  probed, none listening, and the tool says exactly that.</p>
-  <pre>Analyzed scan-results.txt: 6 port rows across 3 hosts, 5 open
+</section>
+<section class="sheet" id="analyze"><h2>The Analyze Road</h2>
+<p>Analyze reads an existing scan output file and summarizes it per host, parsing nmap normal output, nmap grepable output, and plain host:port lines. Lines it cannot understand are counted and reported as skipped, never guessed at.</p>
+<div class="stop"><b>file</b><span>The scan output file to parse.</span></div>
+<p>Timetable entry, the worked example:</p>
+<pre>python3 main.py analyze scan-results.txt
+Analyzed scan-results.txt: 6 port rows across 3 hosts, 5 open
 192.0.2.10:
   22/tcp open ssh
   23/tcp open telnet  &lt;- Telnet, plaintext remote shell
@@ -109,56 +90,27 @@
 192.0.2.30:
   6379/tcp open redis  &lt;- Redis, often unauthenticated
 (1 lines not understood and skipped)</pre>
-  <p class="cap">The analyze mode reading a mixed fixture file (nmap
-  normal, grepable, and plain lines, plus one line nobody can parse)
-  during the test run. The same run also caught both test listeners I
-  opened on loopback and refused to overwrite its own input file.</p>
-
-  <h2>The apparatus</h2>
-  <p>The schematic I drew for this tool, from its real parts: one
-  file, its parsers, its probe pool, and the watch list.</p>
-  <img class="schematic" src="assets/schematic.png"
-       alt="Hand-drawn invention schematic of analyze-port-scanner">
-
-  <h2>Get it</h2>
-  <p>Python 3, standard library only, nothing to install.
-  Source and full documentation:
-  <a href="https://github.com/ShadowGuard-AI/analyze-port-scanner">github.com/ShadowGuard-AI/analyze-port-scanner</a>.</p>
+<p>Recorded result: 6 port rows across 3 hosts, 5 open, ending with 1 line not understood and skipped.</p>
+</section>
+</div>
+<div class="rail minor"></div>
+<section class="sheet" id="shared"><h2>Stops Both Roads Call At</h2>
+<p class="flagged">Both modes flag the ports the author always wants called out by name: Telnet, FTP, SMB, RDP, and VNC, and exposed database ports such as MySQL, PostgreSQL, Redis, and MongoDB.</p>
+<p>Both modes can emit JSON with --json and write to a file with --output. Help is reached by python3 main.py --help or python3 main.py scan --help.</p>
+<div class="notice"><h3>The Plow Does Not Bury Its Own Track</h3>
+<p>On the analyze road, --output carries a guard stated plainly: if the output path resolves to the input file, the run refuses and exits non zero rather than overwrite the scan it was handed.</p></div>
+</section>
+<div class="rail"></div>
+<section class="sheet" id="terminus"><h2>Terminus: boarding and alighting rules</h2>
+<pre>git clone https://github.com/ShadowGuard-AI/analyze-port-scanner.git
+cd analyze-port-scanner</pre>
+<p>And then nothing, since the source states Python 3, standard library only, there is nothing to install. That fact is printed in its own panel here rather than apologized for.</p>
+<h2>What the Bell Means</h2>
+<p>Exit codes close the sheet. 0 means the run did its work, and a scan that found nothing open still exits 0 because the probing happened. 2 means the run processed nothing or was refused, covering an unresolvable host, no ports selected, a missing input file, a scan file with no parseable results, or an output path pointing at the input file.</p>
+<p>Licence is the last line on the sheet: MIT, with the source pointing to the LICENSE file, and the copyright line Copyright (c) Gavin K (@Epsilon0xCell) printed as written.</p>
+<p><a href="https://github.com/ShadowGuard-AI/analyze-port-scanner">The repository on GitHub</a></p>
+</section>
 </main>
-<footer>
-  analyze-port-scanner is MIT licensed. Copyright (c) Gavin K (@Epsilon0xCell).
-</footer>
-<script>
-  // The board is data, not decoration: port, service, and the note
-  // the tool itself prints for watch-list ports. I keep the three in
-  // one place here exactly the way main.py keeps them in one dict.
-  var jacks = [
-    [21,'ftp','FTP, plaintext file transfer'],[22,'ssh',''],
-    [23,'telnet','Telnet, plaintext remote shell'],[25,'smtp',''],
-    [53,'domain',''],[80,'http',''],[110,'pop3',''],[143,'imap',''],
-    [443,'https',''],[445,'microsoft-ds','SMB, Windows file sharing'],
-    [993,'imaps',''],[995,'pop3s',''],[1723,'pptp',''],
-    [3306,'mysql','MySQL or MariaDB'],
-    [3389,'ms-wbt-server','RDP, Windows remote desktop'],
-    [5432,'postgresql','PostgreSQL'],[5900,'vnc','VNC remote desktop'],
-    [6379,'redis','Redis, often unauthenticated'],[8000,'http-alt',''],
-    [8080,'http-proxy',''],[8443,'https-alt',''],
-    [9200,'elasticsearch','Elasticsearch HTTP API'],
-    [27017,'mongodb','MongoDB']
-  ];
-  var board = document.getElementById('board');
-  var detail = document.getElementById('jack-detail');
-  jacks.forEach(function(j) {
-    var d = document.createElement('div');
-    d.className = 'jack' + (j[2] ? ' watch' : '');
-    d.innerHTML = '<span class="p">' + j[0] + '</span>' +
-                  '<span class="s">' + j[1] + '</span>';
-    d.addEventListener('click', function() {
-      detail.textContent = j[0] + '/tcp ' + j[1] +
-        (j[2] ? ' : ' + j[2] : ' : probed by default, no special note');
-    });
-    board.appendChild(d);
-  });
-</script>
+<footer><p>Theme: snowplow train of the Donner Pass. Type: B612 for headings, Archivo for reading, both SIL Open Font License 1.1. The lettering reference Hultog Snowdrift was reference only and is not embedded.</p></footer>
 </body>
 </html>
