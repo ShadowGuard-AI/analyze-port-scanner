@@ -1,4 +1,13 @@
-![Banner](banner.png)
+![Donner Pass in hard winter: a rotary plow working a walled snow cut, mileposts clear topped, nothing readable](intro-banner.png)
+
+# analyze-port-scanner
+
+![The plow leading through the pass with its plume thrown right and the name painted on the housing flank board, half scoured by blown snow](banner.png)
+
+![Rotary plow front with heavy grey blades, red cutting edges, and snow packed at the lower left, the heading plate](logo.png)
+
+![Working scene in the cut: the rotor turns, the plume arcs, mileposts stay bolted down, and the cleared track unrolls beneath](scene.svg)
+
 
 # analyze-port-scanner
 
@@ -6,6 +15,9 @@ I wrote this tool to do two related jobs: scan a host's TCP ports
 myself, and analyze scan results another tool already produced. Either
 way, what comes out is a short, readable list of what is open and what
 deserves a second look, instead of a wall of raw scanner output.
+
+
+![Minor section divider](sep-light.svg)
 
 ## What it does
 
@@ -15,11 +27,16 @@ deserves a second look, instead of a wall of raw scanner output.
   host. I parse nmap normal output, nmap grepable output, and plain
   `host:port` lines. Lines I cannot understand are counted and
   reported as skipped, never guessed at.
+
+> Signal notice: lines the analyze mode cannot understand are counted and reported as skipped, never guessed at. That promise is stated here before any report is trusted.
 - Both modes flag the ports I always want called out by name:
   Telnet, FTP, SMB, RDP, VNC, and exposed database ports such as
   MySQL, PostgreSQL, Redis, and MongoDB.
 - Both modes can emit JSON with `--json` and write to a file with
   `--output`.
+
+
+![Minor section divider](sep-light.svg)
 
 ## Install
 
@@ -29,6 +46,9 @@ cd analyze-port-scanner
 ```
 
 Python 3, standard library only. There is nothing to install.
+
+
+![Major section divider](sep-heavy.svg)
 
 ## Usage
 
@@ -63,6 +83,9 @@ Analyzed scan-results.txt: 6 port rows across 3 hosts, 5 open
 (1 lines not understood and skipped)
 ```
 
+
+![Major section divider](sep-heavy.svg)
+
 ## Parameters
 
 `scan`:
@@ -83,8 +106,13 @@ Analyzed scan-results.txt: 6 port rows across 3 hosts, 5 open
   If the output path resolves to the input file, I refuse and exit
   non-zero rather than overwrite the scan I was handed.
 
+> Signal notice: The Plow Does Not Bury Its Own Track. If the output path resolves to the input file, the run refuses and exits non-zero rather than overwrite the scan it was handed.
+
 Run `python3 main.py --help` or `python3 main.py scan --help` for the
 full text.
+
+
+![Major section divider](sep-heavy.svg)
 
 ## Exit codes
 
@@ -94,6 +122,11 @@ full text.
 - `2`: the run processed nothing or was refused: an unresolvable
   host, no ports selected, a missing input file, a scan file with no
   parseable results, or an `--output` that points at the input file.
+
+> Signal notice: exit code 2 covers every refused or empty run: an unresolvable host, no ports selected, a missing input file, a scan file with no parseable results, or an output path pointing at the input file. Exit code 0 means the work happened, even when nothing was open.
+
+
+![Major section divider](sep-heavy.svg)
 
 ## License
 

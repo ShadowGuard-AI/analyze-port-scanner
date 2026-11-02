@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-label="Side view of the plow working in the cut: blown snow veils off the far wall, the rotor turns and the plume arcs in the middle while the train crawls, and the cleared track scrolls past near">
+<rect x="0" y="0" width="1200" height="300" fill="#e3e5e0"/>
+<polygon points="0,60 320,26 700,52 1200,30 1200,96 0,96" fill="#eef0ec"/>
+<polygon points="0,84 470,96 470,220 0,236" fill="#f7f8f5"/>
+<polygon points="880,100 1200,88 1200,224 880,216" fill="#f7f8f5"/>
+<g stroke="#fdfdfb" stroke-width="3">
+<line x1="30" y1="88" x2="120" y2="82"><animate attributeName="opacity" values="0.25;0.8;0.25" dur="6s" repeatCount="indefinite"/></line>
+<line x1="180" y1="94" x2="290" y2="88"><animate attributeName="opacity" values="0.8;0.25;0.8" dur="7s" repeatCount="indefinite"/></line>
+<line x1="330" y1="90" x2="430" y2="84"><animate attributeName="opacity" values="0.25;0.8;0.25" dur="8s" repeatCount="indefinite"/></line>
+</g>
+<polygon points="0,208 1200,196 1200,228 0,244" fill="#34322e"/>
+<g stroke="#8c8474" stroke-width="6">
+<g><animateTransform attributeName="transform" type="translate" values="0,0; -132,3" dur="5s" repeatCount="indefinite"/>
+<line x1="20" y1="222" x2="52" y2="221"/><line x1="152" y1="221" x2="184" y2="220"/><line x1="284" y1="220" x2="316" y2="219"/><line x1="416" y1="219" x2="448" y2="218"/><line x1="548" y1="218" x2="580" y2="217"/><line x1="680" y1="217" x2="712" y2="216"/><line x1="812" y1="216" x2="844" y2="215"/><line x1="944" y1="215" x2="976" y2="214"/><line x1="1076" y1="214" x2="1108" y2="213"/><line x1="1208" y1="213" x2="1240" y2="212"/>
+</g></g>
+<line x1="0" y1="212" x2="1200" y2="200" stroke="#9c9e9a" stroke-width="4"/>
+<g fill="#6a6c68"><rect x="560" y="120" width="9" height="52"/><rect x="556" y="108" width="17" height="12" fill="#fbfbf9"/><rect x="760" y="116" width="9" height="52"/><rect x="756" y="104" width="17" height="12" fill="#fbfbf9"/><rect x="950" y="112" width="9" height="52"/><rect x="946" y="100" width="17" height="12" fill="#fbfbf9"/></g>
+<g><animateTransform attributeName="transform" type="translate" values="0,0; 46,-1; 0,0" dur="14s" repeatCount="indefinite"/>
+<g fill="#787a76" opacity="0.55"><ellipse cx="238" cy="92" rx="52" ry="17"><animate attributeName="opacity" values="0.55;0.3;0.55" dur="9s" repeatCount="indefinite"/></ellipse><ellipse cx="330" cy="82" rx="66" ry="20"><animate attributeName="opacity" values="0.3;0.55;0.3" dur="11s" repeatCount="indefinite"/></ellipse></g>
+<rect x="120" y="118" width="212" height="96" fill="#265434"/>
+<rect x="120" y="118" width="212" height="17" fill="#1e4228"/>
+<rect x="176" y="86" width="30" height="34" fill="#2c2e2c"/>
+<rect x="196" y="140" width="128" height="56" fill="#16381f"/>
+<text x="204" y="162" font-family="monospace" font-size="15" fill="#e8e4d6">analyze-</text>
+<text x="204" y="180" font-family="monospace" font-size="15" fill="#e8e4d6">port-scanner</text>
+<g transform="translate(408,166)">
+<circle r="82" fill="#265434" stroke="#183a22" stroke-width="5"/>
+<g stroke="#96988e" stroke-width="14"><line x1="0" y1="-20" x2="0" y2="-66"/><line x1="17" y1="-10" x2="57" y2="-33"/><line x1="20" y1="8" x2="66" y2="14"/><line x1="8" y1="19" x2="30" y2="58"/><line x1="-10" y1="18" x2="-32" y2="56"/><line x1="-19" y1="4" x2="-64" y2="16"/><line x1="-14" y1="-14" x2="-52" y2="-38"/></g>
+<g stroke="#c42c28" stroke-width="3"><line x1="4" y1="-20" x2="4" y2="-66"/><line x1="21" y1="-10" x2="61" y2="-33"/><line x1="24" y1="8" x2="70" y2="14"/></g>
+<ellipse cx="-46" cy="34" rx="15" ry="10" fill="#fcfcfa"/><ellipse cx="-58" cy="6" rx="13" ry="9" fill="#fcfcfa"/>
+<circle r="17" fill="#1a1c1a"/>
+<animateTransform attributeName="transform" type="rotate" values="0; 360" dur="7s" repeatCount="indefinite" additive="sum"/>
+</g>
+<rect x="400" y="52" width="7" height="34" fill="#2c2e2c"/><ellipse cx="403" cy="44" rx="11" ry="10" fill="#c4baa2" stroke="#2c2e2c" stroke-width="3"/>
+<g fill="#fcfcfa"><ellipse cx="540" cy="96" rx="26" ry="12"><animate attributeName="opacity" values="0.95;0.6;0.95" dur="5s" repeatCount="indefinite"/></ellipse><ellipse cx="640" cy="76" rx="34" ry="14"><animate attributeName="opacity" values="0.6;0.95;0.6" dur="6s" repeatCount="indefinite"/></ellipse><ellipse cx="752" cy="88" rx="28" ry="12"><animate attributeName="opacity" values="0.9;0.55;0.9" dur="7s" repeatCount="indefinite"/></ellipse><ellipse cx="856" cy="112" rx="22" ry="10"/></g>
+</g>
+<g fill="#fcfcfa"><ellipse cx="352" cy="238" rx="15" ry="5"><animate attributeName="opacity" values="0;1;0" dur="3.4s" repeatCount="indefinite"/></ellipse><ellipse cx="452" cy="246" rx="12" ry="4"><animate attributeName="opacity" values="0;1;0" dur="4.3s" begin="1.4s" repeatCount="indefinite"/></ellipse></g>
+</svg>
