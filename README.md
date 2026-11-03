@@ -128,6 +128,21 @@ full text.
 
 ![Major section divider](sep-heavy.svg)
 
+![Major section divider](sep-heavy.svg)
+
+## Verified in this wave
+
+Live runs in Wave 12 confirmed: `scan` on 127.0.0.1 with
+`--ports 22,80,443` reports 3 ports probed, 0 open, exit 0; `analyze`
+on a crafted nmap-style file reproduces the example shape, 6 port
+rows across 3 hosts, 5 open, with Telnet, MySQL, and Redis flagged
+by name; grepable and plain `host:port` lines parse, 3 rows across
+2 hosts, 2 open; `--json` emits the same counts; an `--output` that
+resolves to the input file, a missing input file, an unresolvable
+host, and an empty port selection each exit 2. The skipped-lines
+count in the Usage example belongs to that example's own source
+file, not to any input shown here.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
