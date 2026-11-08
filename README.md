@@ -1,10 +1,10 @@
-![Donner Pass in hard winter: a rotary plow working a walled snow cut, mileposts clear topped, nothing readable](intro-banner.png)
+![Watchman close up raising his lantern to one shutter door as his other hand tries its padlock, an open door glowing amber further down the row behind](intro-banner.png)
 
 # analyze-port-scanner
 
-![The plow leading through the pass with its plume thrown right and the name painted on the housing flank board, half scoured by blown snow](banner.png)
+![Long brick warehouse row at night with a line of plain iron shutter doors, a watchman with a raised lantern partway along the row and one door standing open spilling amber light onto the wet ground](banner.png)
 
-![Rotary plow front with heavy grey blades, red cutting edges, and snow packed at the lower left, the heading plate](logo.png)
+![One iron shutter door straight on at night in a brick warehouse wall, a brass padlock hanging on its hasp, a warm amber light seam showing under the door and a lit watchman's lantern resting on the ground beside it](logo.png)
 
 ![Working scene in the cut: the rotor turns, the plume arcs, mileposts stay bolted down, and the cleared track unrolls beneath](scene.svg)
 
