@@ -3,114 +3,83 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>analyze-port-scanner: Snowplow Train of the Donner Pass</title>
-<meta name="description" content="A tool with two related jobs: scan a host's TCP ports directly, and analyze scan results another tool already produced. Python 3, standard library only.">
+<title>analyze-port-scanner: The Night Round</title>
 <style>
-@font-face{font-family:'B612';src:url('fonts/B612.ttf') format('truetype');}
-@font-face{font-family:'Archivo';src:url('fonts/Archivo.ttf') format('truetype');}
-:root{--grey:#83857f;--green:#265434;--dark:#1e4228;--red:#c42c28;--dust:#e8e4d6;--ink:#23251f}
-*{box-sizing:border-box}body{margin:0;background:var(--grey);color:var(--ink);font-family:'Archivo',sans-serif;line-height:1.65}
-h1,h2{font-family:'B612',monospace}
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;background:var(--grey)}
-.hero img.heroimg{width:100%;height:62vh;object-fit:cover;display:block}
-.hero .in{padding:1rem 6vw 2rem;max-width:1120px;margin:0 auto;width:100%}
-.hero h1{color:var(--dust)}
-.logo{width:170px;background:var(--green);border-radius:10px}
-main{padding:0 6vw 3rem;max-width:1120px;margin:0 auto}
-nav{display:flex;gap:.8rem;flex-wrap:wrap;margin:1rem 0}
-.blade{display:inline-block;text-decoration:none;color:var(--dust);font-family:'B612',monospace;padding:.8rem 1.5rem .8rem 1.1rem;background:linear-gradient(115deg,var(--green) 88%,#a8986e 88%,#a8986e 93%,#96988e 93%);clip-path:polygon(0 18%,88% 0,100% 50%,88% 100%,0 82%);transition:transform .12s,filter .15s}
-.blade:hover{filter:drop-shadow(0 3px 0 var(--red))}
-.blade:active{transform:translateY(5px)}
-.blade:focus-visible{outline:none;filter:drop-shadow(0 0 6px var(--dust))}
-.sheet{background:var(--green);color:var(--dust);padding:0 1.5rem 1.3rem;margin:1.8rem 0;border-top:6px solid var(--dust);background-image:repeating-linear-gradient(to right,transparent 0 118px,rgba(232,228,214,.14) 118px 120px)}
-.sheet h2{border-bottom:2px solid var(--dust);padding-bottom:.4rem}
-.roads{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
-@media(max-width:760px){.roads{grid-template-columns:1fr}}
-pre{background:#14231a;color:var(--dust);padding:1rem;overflow-x:auto}
-a{color:#7a1d1a}a:before{content:'';display:inline-block;width:10px;height:17px;margin-right:.5em;vertical-align:-3px;background:linear-gradient(to bottom,var(--dust) 0 34%,#6a6c68 34%);border:1px solid #555752}
-.blade:before{content:none}
-.flagged{border-bottom:3px solid var(--red);padding-bottom:.3rem}
-.rail{height:12px;margin:2.2rem 0;background:var(--grey);border-top:6px solid #6a6c68;position:relative}
-.rail:after{content:'';position:absolute;left:50%;top:-9px;width:74px;height:18px;margin-left:-37px;background:#6a6c68;border:2px solid #444642}
-.rail.minor{width:50%;margin:2.2rem auto;border-top:6px solid #6a6c68}
-.rail.minor:after{content:none}
-.stop{display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid rgba(232,228,214,.22)}
-.stop b{font-family:'B612',monospace;min-width:120px}
-footer{padding:1rem 6vw 2.4rem;max-width:1120px;margin:0 auto}
-.notice{background:var(--dust);color:var(--ink);border:3px solid var(--red);padding:.2rem 1.3rem 1rem;margin:1.4rem 0}
-.notice h3{font-family:'B612',monospace}
+@font-face { font-family: 'Oxanium'; src: url('fonts/Oxanium-400.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'Oxanium'; src: url('fonts/Oxanium-700.woff2') format('woff2'); font-weight: 700; }
+@font-face { font-family: 'Chivo'; src: url('fonts/Chivo-400.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'Chivo'; src: url('fonts/Chivo-700.woff2') format('woff2'); font-weight: 700; }
+:root { --brick: #7a4a38; --iron: #565d63; --indigo: #131828; --amber: #e8a33d; --paper: #ece9e2; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Chivo', sans-serif; background: var(--indigo); color: var(--paper); line-height: 1.6; }
+header.top { display: flex; justify-content: space-between; align-items: center; padding: 18px 28px; border-bottom: 3px solid var(--amber); background: #0d1120; }
+.wordmark { font-family: 'Oxanium', sans-serif; font-weight: 700; letter-spacing: .05em; }
+.beacon { color: var(--amber); font-weight: 700; font-size: .85rem; letter-spacing: .14em; text-transform: uppercase; }
+.hero { text-align: center; padding: 52px 22px 10px; }
+.hero img.logo { width: 168px; height: auto; border: 4px solid var(--iron); border-radius: 6px; }
+h1, h2 { font-family: 'Oxanium', sans-serif; }
+h1 { font-size: 2.6rem; margin: 20px 0 8px; font-weight: 700; }
+.tag { color: #b9bcc4; max-width: 44rem; margin: 0 auto; }
+.buttons { margin: 24px 0 8px; }
+.buttons a { display: inline-block; margin: 4px; padding: 11px 22px; background: var(--amber); color: #131828; font-weight: 700; text-decoration: none; border-radius: 4px; }
+.buttons a.alt { background: transparent; color: var(--paper); border: 2px solid var(--brick); }
+figure.wide { max-width: 1020px; margin: 26px auto; padding: 0 18px; }
+figure.wide img { width: 100%; height: auto; display: block; border: 1px solid var(--iron); }
+figcaption { color: #9a8f85; font-size: .9rem; padding-top: 8px; text-align: center; }
+.strip { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; padding: 22px 18px; }
+.strip div { background: #0d1120; border-top: 3px solid var(--brick); padding: 14px 18px; min-width: 180px; text-align: center; }
+.strip b { display: block; font-family: 'Oxanium', sans-serif; color: var(--amber); font-size: 1.15rem; }
+main { max-width: 880px; margin: 0 auto; padding: 10px 22px 30px; }
+h2 { color: var(--paper); border-bottom: 2px solid var(--iron); padding-bottom: 6px; margin-top: 38px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid var(--iron); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: #0d1120; color: var(--amber); }
+code { background: #232a42; padding: 1px 6px; border-radius: 3px; color: #e8c88a; }
+.hold { border-left: 5px solid var(--amber); background: #0d1120; padding: 14px 18px; }
+footer { text-align: center; padding: 26px 18px 34px; color: #8d929e; font-size: .9rem; border-top: 3px solid var(--amber); margin-top: 30px; }
 </style>
 </head>
 <body>
-<header class="hero">
-<img class="heroimg" src="assets/intro-banner.png" alt="A rotary plow working a snow cut in the Donner Pass, plume thrown to the right, no text">
-<div class="in">
-<img class="logo" src="assets/logo.png" alt="Rotary plow front: a green circular housing, grey blades with red cutting edges, snow packed at the lower left">
-<h1>analyze-port-scanner</h1>
-<p>A timetable sheet for a line with exactly two services. Scan runs on the left road, analyze on the right road.</p>
-<nav>
-<a class="blade" href="#scan">The Scan Road</a>
-<a class="blade" href="#analyze">The Analyze Road</a>
-<a class="blade" href="#shared">Shared stops</a>
-<a class="blade" href="#terminus">Terminus</a>
-</nav>
+<header class="top"><span class="wordmark">analyze-port-scanner</span><span class="beacon">Lantern raised at every door</span></header>
+<section class="hero">
+<img class="logo" src="assets/logo.png" alt="One iron shutter door straight on at night in a brick warehouse wall, a brass padlock hanging on its hasp, a warm amber light seam showing under the door and a lit watchman's lantern resting on the ground beside it">
+<h1>The Night Round</h1>
+<p class="tag">I wrote this tool to do two related jobs: scan a host's TCP ports myself, and analyze scan results another tool already produced. Either way, what comes out is a short, readable list of what is open and what deserves a second look.</p>
+<p class="buttons"><a href="https://github.com/ShadowGuard-AI/analyze-port-scanner">View on GitHub</a> <a class="alt" href="https://github.com/ShadowGuard-AI/analyze-port-scanner#readme">Read the README</a></p>
+</section>
+<figure class="wide"><img src="assets/intro-banner.png" alt="Watchman close up raising his lantern to one shutter door as his other hand tries its padlock, an open door glowing amber further down the row behind"><figcaption>The lantern raised to one door, its padlock tried by hand.</figcaption></figure>
+<div class="strip">
+<div><b>2 modes</b>scan and analyze</div>
+<div><b>0.6s</b>default timeout per connect</div>
+<div><b>Nothing to install</b>Python 3, standard library only</div>
+<div><b>Exit 0 / Exit 2</b>work done, or refused</div>
 </div>
-</header>
 <main>
-<section class="sheet"><h2>Masthead: the line's charter</h2>
-<p>I wrote this tool to do two related jobs: scan a host's TCP ports myself, and analyze scan results another tool already produced. Either way, what comes out is a short, readable list of what is open and what deserves a second look, instead of a wall of raw scanner output.</p>
-<p>That charter stays in the first person on this sheet, because the source's voice is part of its evidence.</p>
-</section>
-<div class="rail"></div>
-<div class="roads">
-<section class="sheet" id="scan"><h2>The Scan Road</h2>
-<p>Scan probes a host with plain TCP connect attempts and reports the ports that complete a handshake, with service names.</p>
-<div class="stop"><b>host</b><span>The hostname or IP address to scan.</span></div>
-<div class="stop"><b>--ports</b><span>A comma list of ports and ranges such as 22,80,8000-8100, defaulting to a common services set.</span></div>
-<div class="stop"><b>--port-range</b><span>One more range to add, such as 1-1024.</span></div>
-<div class="stop"><b>--timeout</b><span>Seconds per connect attempt, default 0.6.</span></div>
-<p>Timetable entry, the worked example:</p>
-<pre>python3 main.py scan 127.0.0.1 --ports 22,80,443
-Scanned 127.0.0.1 (127.0.0.1): 3 ports probed, 0 open
-  nothing open in the probed set</pre>
-</section>
-<section class="sheet" id="analyze"><h2>The Analyze Road</h2>
-<p>Analyze reads an existing scan output file and summarizes it per host, parsing nmap normal output, nmap grepable output, and plain host:port lines. Lines it cannot understand are counted and reported as skipped, never guessed at.</p>
-<div class="stop"><b>file</b><span>The scan output file to parse.</span></div>
-<p>Timetable entry, the worked example:</p>
-<pre>python3 main.py analyze scan-results.txt
-Analyzed scan-results.txt: 6 port rows across 3 hosts, 5 open
-192.0.2.10:
-  22/tcp open ssh
-  23/tcp open telnet  &lt;- Telnet, plaintext remote shell
-  80/tcp closed http
-192.0.2.20:
-  443/tcp open https
-  3306/tcp open mysql  &lt;- MySQL or MariaDB
-192.0.2.30:
-  6379/tcp open redis  &lt;- Redis, often unauthenticated
-(1 lines not understood and skipped)</pre>
-<p>Recorded result: 6 port rows across 3 hosts, 5 open, ending with 1 line not understood and skipped.</p>
-</section>
-</div>
-<div class="rail minor"></div>
-<section class="sheet" id="shared"><h2>Stops Both Roads Call At</h2>
-<p class="flagged">Both modes flag the ports the author always wants called out by name: Telnet, FTP, SMB, RDP, and VNC, and exposed database ports such as MySQL, PostgreSQL, Redis, and MongoDB.</p>
-<p>Both modes can emit JSON with --json and write to a file with --output. Help is reached by python3 main.py --help or python3 main.py scan --help.</p>
-<div class="notice"><h3>The Plow Does Not Bury Its Own Track</h3>
-<p>On the analyze road, --output carries a guard stated plainly: if the output path resolves to the input file, the run refuses and exits non zero rather than overwrite the scan it was handed.</p></div>
-</section>
-<div class="rail"></div>
-<section class="sheet" id="terminus"><h2>Terminus: boarding and alighting rules</h2>
-<pre>git clone https://github.com/ShadowGuard-AI/analyze-port-scanner.git
-cd analyze-port-scanner</pre>
-<p>And then nothing, since the source states Python 3, standard library only, there is nothing to install. That fact is printed in its own panel here rather than apologized for.</p>
-<h2>What the Bell Means</h2>
-<p>Exit codes close the sheet. 0 means the run did its work, and a scan that found nothing open still exits 0 because the probing happened. 2 means the run processed nothing or was refused, covering an unresolvable host, no ports selected, a missing input file, a scan file with no parseable results, or an output path pointing at the input file.</p>
-<p>Licence is the last line on the sheet: MIT, with the source pointing to the LICENSE file, and the copyright line Copyright (c) Gavin K (@Epsilon0xCell) printed as written.</p>
-<p><a href="https://github.com/ShadowGuard-AI/analyze-port-scanner">The repository on GitHub</a></p>
-</section>
+<h2>The two jobs</h2>
+<p><code>scan</code> probes a host with plain TCP connect attempts and reports the ports that complete a handshake, with service names. <code>analyze</code> reads an existing scan output file and summarizes it per host, parsing nmap normal output, nmap grepable output, and plain <code>host:port</code> lines. Both modes flag the ports always worth calling out by name: Telnet, FTP, SMB, RDP, VNC, and exposed database ports such as MySQL, PostgreSQL, Redis, and MongoDB. Both modes can emit JSON with <code>--json</code> and write to a file with <code>--output</code>.</p>
+<figure class="wide" style="padding:0;margin:18px 0;"><img src="assets/banner.png" alt="Long brick warehouse row at night with a line of plain iron shutter doors, a watchman with a raised lantern partway along the row and one door standing open spilling amber light onto the wet ground"></figure>
+<h2>Parameters: scan</h2>
+<table>
+<tr><th>Parameter</th><th>What the README says</th></tr>
+<tr><td><code>host</code></td><td>hostname or IP address to scan.</td></tr>
+<tr><td><code>--ports</code></td><td>comma list of ports and ranges, for example <code>22,80,8000-8100</code>. Default is a common-services set.</td></tr>
+<tr><td><code>--port-range</code></td><td>one more range to add, for example <code>1-1024</code>.</td></tr>
+<tr><td><code>--timeout</code></td><td>seconds per connect attempt. Default 0.6.</td></tr>
+<tr><td><code>--json</code></td><td>emit JSON instead of text.</td></tr>
+<tr><td><code>--output</code></td><td>write the report to this file instead of stdout.</td></tr>
+</table>
+<h2>Parameters: analyze</h2>
+<table>
+<tr><th>Parameter</th><th>What the README says</th></tr>
+<tr><td><code>file</code></td><td>the scan output file to parse.</td></tr>
+<tr><td><code>--json</code></td><td>emit JSON instead of text.</td></tr>
+<tr><td><code>--output</code></td><td>write the report to this file instead of stdout. If the output path resolves to the input file, the run refuses and exits non-zero rather than overwrite the scan it was handed.</td></tr>
+</table>
+<h2>Exit codes and stated limits</h2>
+<div class="hold"><p><code>0</code>: the run did its work. A scan that probed its ports and found nothing open says so and still exits 0, because the probing happened. <code>2</code>: the run processed nothing or was refused: an unresolvable host, no ports selected, a missing input file, a scan file with no parseable results, or an <code>--output</code> that points at the input file.</p>
+<p>Lines the analyze mode cannot understand are counted and reported as skipped, never guessed at.</p>
+<p>Verified in Wave 12, as the README records it: scan on 127.0.0.1 with <code>--ports 22,80,443</code> reports 3 ports probed, 0 open, exit 0; analyze on a crafted nmap-style file reproduces the example shape, 6 port rows across 3 hosts, 5 open, with Telnet, MySQL, and Redis flagged by name. Licence: MIT, see the LICENSE file in the repository.</p></div>
 </main>
-<footer><p>Theme: snowplow train of the Donner Pass. Type: B612 for headings, Archivo for reading, both SIL Open Font License 1.1. The lettering reference Hultog Snowdrift was reference only and is not embedded.</p></footer>
+<footer>analyze-port-scanner, walked door by door. Fonts: Oxanium and Chivo, self-hosted under the SIL Open Font License.</footer>
 </body>
 </html>
