@@ -9,7 +9,6 @@
 ![Working scene in the cut: the rotor turns, the plume arcs, mileposts stay bolted down, and the cleared track unrolls beneath](scene.svg)
 
 
-# analyze-port-scanner
 
 I wrote this tool to do two related jobs: scan a host's TCP ports
 myself, and analyze scan results another tool already produced. Either
